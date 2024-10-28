@@ -1,2 +1,1 @@
-# LLM_APPLICATIONHACKATHON
-LLM Application Hackathon 2024
+# LLM_Hackathon

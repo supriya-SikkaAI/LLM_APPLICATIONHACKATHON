@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sikka DevGenie</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f3f0f9;
+            color: #4a235a;
+        }
+        h1 {
+            color: #4a148c;
+            text-align: center; /* Center-align the title */
+        }
+        .chat-container {
+            border: 1px solid #d1c4e9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background-color: #ede7f6;
+        }
+        .input-container {
+            display: flex;
+            gap: 10px;
+        }
+        #question {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #d1c4e9;
+            border-radius: 8px;
+            color: #4a235a;
+            background-color: #f3e5f5;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #6a1b9a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #4a148c;
+        }
+        #response {
+            margin-top: 20px;
+            white-space: pre-wrap;
+            font-size: 1.1em;
+            color: #311b92;
+        }
+        .loading {
+            display: none;
+            margin-top: 20px;
+            color: #4a148c;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sikka DevGenie</h1>
+    <div class="chat-container">
+        <div class="input-container">
+            <input type="text" id="question" placeholder="Ask your question...">
+            <button onclick="askQuestion()">Ask</button>
+        </div>
+        <div class="loading" id="loading">Processing...</div>
+        <div id="response"></div>
+    </div>
+
+    <script>
+        async function askQuestion() {
+            const question = document.getElementById('question').value;
+            const loading = document.getElementById('loading');
+            const response = document.getElementById('response');
+
+            if (!question) return;
+
+            loading.style.display = 'block';
+            response.textContent = '';
+
+            try {
+                const res = await fetch('/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ question })
+                });
+
+                const data = await res.json();
+
+                if (data.status === 'success') {
+                    response.textContent = data.answer;
+                } else {
+                    response.textContent = 'Error: ' + data.message;
+                }
+            } catch (error) {
+                response.textContent = 'Error: ' + error.message;
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        // Allow Enter key to submit
+        document.getElementById('question').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                askQuestion();
+            }
+        });
+    </script>
+</body>
+</html>
